@@ -32,7 +32,7 @@ build() {
 image="alpine/jmeter"
 repo="apache/jmeter"
 
-latest=$(curl -sL https://archive.apache.org/dist/jmeter/binaries/ |grep -oP '(?<=href=\")[^"]*'|grep tgz$ |cut -d \- -f3|sed 's/\.tgz//' |sort -n |head -10)
+latest=$(curl -sL https://archive.apache.org/dist/jmeter/binaries/ |grep -oP '(?<=href=\")[^"]*'|grep tgz$ |cut -d \- -f3|sed 's/\.tgz//' |sort -rn |head -10)
 
 for tag in ${latest}
 do
