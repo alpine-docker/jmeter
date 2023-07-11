@@ -48,7 +48,7 @@ echo "Update latest image with latest release"
 latest=$(echo $latest |xargs -n1|sort -Vr|head -1)
 echo $latest
 
-if [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == false ]]; then
+if [[ "$CIRCLE_BRANCH" == "master" && "$CIRCLE_PULL_REQUEST" == false ]]; then
   docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   docker pull ${image}:${latest}
   docker tag ${image}:${latest} ${image}:latest
