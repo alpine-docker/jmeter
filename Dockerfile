@@ -1,9 +1,9 @@
 # inspired by https://github.com/hauptmedia/docker-jmeter  and
 # https://github.com/hhcordero/docker-jmeter-server/blob/master/Dockerfile and
 # https://github.com/justb4/docker-jmeter
-FROM alpine:3.10
+FROM alpine:3.18
 
-ARG JMETER_VERSION="5.3"
+ARG JMETER_VERSION="5.6"
 ENV JMETER_HOME /opt/apache-jmeter-${JMETER_VERSION}
 ENV	JMETER_BIN	${JMETER_HOME}/bin
 ENV	JMETER_DOWNLOAD_URL  https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz
