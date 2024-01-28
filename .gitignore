@@ -2,3 +2,6 @@ docker-remove-all.sh
 .DS_Store
 **/report/
 tests/
+
+functions.sh
+crane
