@@ -1,56 +1,34 @@
 #!/usr/bin/env bash
 
 # Prerequisite
-# Make sure you set secret enviroment variables in Travis CI
+# Make sure you set secret enviroment variables in CI
 # DOCKER_USERNAME
 # DOCKER_PASSWORD
-# API_TOKEN
 
-# set -ex
+set -e
 
-build() {
-
-  echo "Found new version, building the image ${image}:${tag}"
-  echo docker build --no-cache --build-arg JMETER_VERSION=${tag} -t ${image}:${tag} .
-  docker build --no-cache --build-arg JMETER_VERSION=${tag} -t ${image}:${tag} .
-
-  # # run test
-  # version=$(docker run -ti --rm ${image}:${tag} --version|grep ${tag}|awk '{print $NF}')
-  # if [ "${version}" == "${tag}" ]; then
-  #   echo "matched"
-  # else
-  #   echo "unmatched"
-  #   exit
-  # fi
-
-  if [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == false ]]; then
-    docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-    docker push ${image}:${tag}
-  fi
+# usage
+Usage() {
+  echo "$0 <image_name>"
 }
 
-image="alpine/jmeter"
-repo="apache/jmeter"
-
-latest=$(curl -sL https://archive.apache.org/dist/jmeter/binaries/ |grep -oP '(?<=href=\")[^"]*'|grep tgz$ |cut -d \- -f3|sed 's/\.tgz//' |sort -rn |head -10)
-
-for tag in ${latest}
-do
-  echo $tag
-  status=$(curl -sL https://hub.docker.com/v2/repositories/${image}/tags/${tag})
-  echo $status
-  if [[ "${status}" =~ "not found" ]]; then
-    build
-  fi
-done
-
-echo "Update latest image with latest release"
-latest=$(echo $latest |xargs -n1|sort -Vr|head -1)
-echo $latest
-
-if [[ "$CIRCLE_BRANCH" == "master" && "$CIRCLE_PULL_REQUEST" == false ]]; then
-  docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-  docker pull ${image}:${latest}
-  docker tag ${image}:${latest} ${image}:latest
-  docker push ${image}:latest
+if [ $# -eq 0 ]; then
+  Usage
+  exit 1
 fi
+
+image="alpine/$1"
+platform="${2:-linux/arm/v7,linux/arm64/v8,linux/arm/v6,linux/amd64,linux/ppc64le,linux/s390x}"
+
+curl -H "Cache-Control: no-cache" -sL "https://raw.githubusercontent.com/alpine-docker/multi-arch-libs/stable/functions.sh" -o functions.sh
+source functions.sh
+
+# tag for reference: rel/v5.6.3
+tag=$(get_latest_release apache/jmeter)
+tag=${tag#rel/v}
+echo $tag
+
+build_arg="JMETER_VERSION=${tag}"
+
+echo "Building image for tag: ${tag}"
+build_docker_image "${tag}" "${image}" "${platform}" "${build_arg}"
