@@ -9,6 +9,12 @@ https://app.circleci.com/pipelines/github/alpine-docker/jmeter
 ### Docker image tags
 https://hub.docker.com/r/alpine/jmeter/tags/
 
+### Improvement
+
+* multi-arch supported
+
+![image](https://github.com/alpine-docker/jmeter/assets/8954908/0b67c229-1fc4-4ea8-b751-1c6073ca81d5)
+
 ========
 # Below is the original README from up stream.
 
